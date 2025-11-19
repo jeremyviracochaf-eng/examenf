@@ -148,6 +148,69 @@ function obtenerJuegosPaginados() {
   return juegosActuales.slice(inicio, fin);
 }
 
+// ===== FUNCIÓN: CREAR TARJETA DE JUEGO =====
+function crearTarjetaJuego(juego) {
+  const titulo = juego.title || juego.external || "Juego Desconocido";
+  const imagen = juego.thumb || "https://via.placeholder.com/250x350?text=Sin+Imagen";
+  const precioNormal = juego.normalPrice ? parseFloat(juego.normalPrice).toFixed(2) : "_";
+  const precioOferta = juego.salePrice ? parseFloat(juego.salePrice).toFixed(2) : precioNormal;
+  const descuento = juego.savings ? Math.round(juego.savings) : null;
+  const tienda = tiendas[juego.storeID] || "Tienda Desconocida";
+
+  const card = document.createElement("div");
+  card.style.cssText = `
+    background-color: #0f172a;
+    border: 1px solid #0891b2;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: all 300ms;
+    cursor: pointer;
+  `;
+
+  card.innerHTML = `
+    <img src="${imagen}" alt="${titulo}" style="width: 100%; height: 200px; object-fit: cover;" />
+    <div style="padding: 1rem; flex-grow: 1; display: flex; flex-direction: column; gap: 0.5rem;">
+      <h3 style="font-family: 'Orbitron', sans-serif; font-size: 0.95rem; font-weight: 600; color: #ffffff; margin: 0;">${titulo}</h3>
+      
+      <p style="font-size: 0.75rem; color: #0891b2; text-transform: uppercase; letter-spacing: 0.05em; margin: 0;">
+        ${tienda}
+      </p>
+
+      <div style="font-size: 0.875rem; color: #cbd5e1; margin: 0.5rem 0 0 0;">
+        ${precioNormal !== "_" ? `<s style="color: #64748b;">$${precioNormal}</s>` : ""}
+        ${precioOferta !== "_" ? `<span style="color: #06b6d4; font-weight: 600; margin-left: 0.5rem;">$${precioOferta}</span>` : ""}
+        ${descuento ? `<span style="color: #10b981; font-weight: 600; margin-left: 0.5rem;">-${descuento}%</span>` : ""}
+      </div>
+
+      <button style="margin-top: auto; background-color: #0891b2; color: #000000; border: none; border-radius: 0.5rem; padding: 0.5rem 1rem; font-weight: 600; cursor: pointer; transition: all 300ms; font-size: 0.875rem;">
+        Ver Detalle
+      </button>
+    </div>
+  `;
+
+  // Evento del botón Ver Detalle
+  card.querySelector("button").addEventListener("click", () => {
+    abrirModal(juego, titulo, imagen, precioNormal, precioOferta, descuento, tienda);
+  });
+
+  // Efectos hover
+  card.addEventListener("mouseenter", () => {
+    card.style.transform = "scale(1.05)";
+    card.style.boxShadow = "0 0 30px rgba(8, 145, 178, 0.5)";
+    card.style.borderColor = "#06b6d4";
+  });
+
+  card.addEventListener("mouseleave", () => {
+    card.style.transform = "scale(1)";
+    card.style.boxShadow = "none";
+    card.style.borderColor = "#0891b2";
+  });
+
+  return card;
+}
+
 // ===== FUNCIÓN: RENDERIZAR VIDEOJUEGOS (RENDER DINÁMICO) =====
 // REQUISITO: Generar las tarjetas desde JavaScript (no escritas manualmente en el HTML)
 // REQUISITO: Buen manejo del DOM - No duplicar elementos al recargar datos
@@ -161,66 +224,7 @@ function renderizarVideojuegos(lista) {
   }
 
   lista.forEach((juego) => {
-    const titulo = juego.title || juego.external || "Juego Desconocido";
-    const imagen = juego.thumb || "https://via.placeholder.com/250x350?text=Sin+Imagen";
-    const precioNormal = juego.normalPrice ? parseFloat(juego.normalPrice).toFixed(2) : "_";
-    const precioOferta = juego.salePrice ? parseFloat(juego.salePrice).toFixed(2) : precioNormal;
-    const descuento = juego.savings ? Math.round(juego.savings) : null;
-    const tienda = tiendas[juego.storeID] || "Tienda Desconocida";
-    const metacritic = juego.metacriticScore || "N/A";
-
-    // REQUISITO: Tarjetas con imagen, título, precio y descuento
-    const card = document.createElement("div");
-    card.style.cssText = `
-      background-color: #0f172a;
-      border: 1px solid #0891b2;
-      border-radius: 0.75rem;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      transition: all 300ms;
-      cursor: pointer;
-    `;
-
-    card.innerHTML = `
-      <img src="${imagen}" alt="${titulo}" style="width: 100%; height: 200px; object-fit: cover;" />
-      <div style="padding: 1rem; flex-grow: 1; display: flex; flex-direction: column; gap: 0.5rem;">
-        <h3 style="font-family: 'Orbitron', sans-serif; font-size: 0.95rem; font-weight: 600; color: #ffffff; margin: 0;">${titulo}</h3>
-        
-        <p style="font-size: 0.75rem; color: #0891b2; text-transform: uppercase; letter-spacing: 0.05em; margin: 0;">
-          ${tienda}
-        </p>
-
-        <div style="font-size: 0.875rem; color: #cbd5e1; margin: 0.5rem 0 0 0;">
-          ${precioNormal !== "_" ? `<s style="color: #64748b;">$${precioNormal}</s>` : ""}
-          ${precioOferta !== "_" ? `<span style="color: #06b6d4; font-weight: 600; margin-left: 0.5rem;">$${precioOferta}</span>` : ""}
-          ${descuento ? `<span style="color: #10b981; font-weight: 600; margin-left: 0.5rem;">-${descuento}%</span>` : ""}
-        </div>
-
-        <button style="margin-top: auto; background-color: #0891b2; color: #000000; border: none; border-radius: 0.5rem; padding: 0.5rem 1rem; font-weight: 600; cursor: pointer; transition: all 300ms; font-size: 0.875rem;">
-          Ver Detalle
-        </button>
-      </div>
-    `;
-
-    // REQUISITO: Modal de detalle - Al hacer clic en "Ver detalle"
-    card.querySelector("button").addEventListener("click", () => {
-      abrirModal(juego, titulo, imagen, precioNormal, precioOferta, descuento, tienda);
-    });
-
-    // Efecto hover
-    card.addEventListener("mouseenter", () => {
-      card.style.transform = "scale(1.05)";
-      card.style.boxShadow = "0 0 30px rgba(8, 145, 178, 0.5)";
-      card.style.borderColor = "#06b6d4";
-    });
-
-    card.addEventListener("mouseleave", () => {
-      card.style.transform = "scale(1)";
-      card.style.boxShadow = "none";
-      card.style.borderColor = "#0891b2";
-    });
-
+    const card = crearTarjetaJuego(juego);
     grid.appendChild(card);
   });
 
@@ -301,66 +305,8 @@ function cargarMasJuegos() {
   paginaActual++;
   const nuevosPaginados = obtenerJuegosPaginados();
   
-  // Agregar nuevas tarjetas sin limpiar las existentes
-  const listaActual = grid.querySelectorAll("div").length;
-  
   nuevosPaginados.forEach((juego) => {
-    const titulo = juego.title || juego.external || "Juego Desconocido";
-    const imagen = juego.thumb || "https://via.placeholder.com/250x350?text=Sin+Imagen";
-    const precioNormal = juego.normalPrice ? parseFloat(juego.normalPrice).toFixed(2) : "_";
-    const precioOferta = juego.salePrice ? parseFloat(juego.salePrice).toFixed(2) : precioNormal;
-    const descuento = juego.savings ? Math.round(juego.savings) : null;
-    const tienda = tiendas[juego.storeID] || "Tienda Desconocida";
-
-    const card = document.createElement("div");
-    card.style.cssText = `
-      background-color: #0f172a;
-      border: 1px solid #0891b2;
-      border-radius: 0.75rem;
-      overflow: hidden;
-      display: flex;
-      flex-direction: column;
-      transition: all 300ms;
-      cursor: pointer;
-    `;
-
-    card.innerHTML = `
-      <img src="${imagen}" alt="${titulo}" style="width: 100%; height: 200px; object-fit: cover;" />
-      <div style="padding: 1rem; flex-grow: 1; display: flex; flex-direction: column; gap: 0.5rem;">
-        <h3 style="font-family: 'Orbitron', sans-serif; font-size: 0.95rem; font-weight: 600; color: #ffffff; margin: 0;">${titulo}</h3>
-        
-        <p style="font-size: 0.75rem; color: #0891b2; text-transform: uppercase; letter-spacing: 0.05em; margin: 0;">
-          ${tienda}
-        </p>
-
-        <div style="font-size: 0.875rem; color: #cbd5e1; margin: 0.5rem 0 0 0;">
-          ${precioNormal !== "_" ? `<s style="color: #64748b;">$${precioNormal}</s>` : ""}
-          ${precioOferta !== "_" ? `<span style="color: #06b6d4; font-weight: 600; margin-left: 0.5rem;">$${precioOferta}</span>` : ""}
-          ${descuento ? `<span style="color: #10b981; font-weight: 600; margin-left: 0.5rem;">-${descuento}%</span>` : ""}
-        </div>
-
-        <button style="margin-top: auto; background-color: #0891b2; color: #000000; border: none; border-radius: 0.5rem; padding: 0.5rem 1rem; font-weight: 600; cursor: pointer; transition: all 300ms; font-size: 0.875rem;">
-          Ver Detalle
-        </button>
-      </div>
-    `;
-
-    card.querySelector("button").addEventListener("click", () => {
-      abrirModal(juego, titulo, imagen, precioNormal, precioOferta, descuento, tienda);
-    });
-
-    card.addEventListener("mouseenter", () => {
-      card.style.transform = "scale(1.05)";
-      card.style.boxShadow = "0 0 30px rgba(8, 145, 178, 0.5)";
-      card.style.borderColor = "#06b6d4";
-    });
-
-    card.addEventListener("mouseleave", () => {
-      card.style.transform = "scale(1)";
-      card.style.boxShadow = "none";
-      card.style.borderColor = "#0891b2";
-    });
-
+    const card = crearTarjetaJuego(juego);
     grid.appendChild(card);
   });
 
