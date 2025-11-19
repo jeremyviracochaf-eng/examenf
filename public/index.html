@@ -12,8 +12,11 @@
 
   <body style="background-color: #000000; color: #ffffff; font-family: 'Roboto', sans-serif; margin: 0; padding: 0; position: relative; overflow-x: hidden;">
     
-    <!-- FONDO DECORATIVO NEXUS -->
+    <!-- FONDO DECORATIVO NEXUS CON ESTRELLAS Y UNIVERSO -->
     <div style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; background: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.05) 0%, rgba(59, 130, 246, 0.03) 20%, transparent 60%);">
+      
+      <!-- Fondo estrellado del universo -->
+      <canvas id="starsCanvas" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;"></canvas>
       
       <!-- Estela central espectacular con gradiente de colores -->
       <svg style="position: absolute; top: -10%; left: 50%; transform: translateX(-50%); width: 800px; height: 800px; opacity: 0.15;" viewBox="0 0 800 800">
@@ -55,6 +58,64 @@
       <div style="position: absolute; top: 20%; right: 20%; width: 8px; height: 8px; background: radial-gradient(circle, #8b5cf6, #6366f1); border-radius: 50%; box-shadow: 0 0 15px rgba(139, 92, 246, 0.6);"></div>
       <div style="position: absolute; top: 18%; left: 15%; width: 6px; height: 6px; background: radial-gradient(circle, #3b82f6, #1e40af); border-radius: 50%; box-shadow: 0 0 12px rgba(59, 130, 246, 0.5);"></div>
     </div>
+
+    <!-- Script para generar estrellas -->
+    <script>
+      // Generar estrellas en el canvas
+      const canvas = document.getElementById('starsCanvas');
+      const ctx = canvas.getContext('2d');
+      
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      
+      // Crear estrellas
+      const stars = [];
+      const numStars = 200;
+      
+      for (let i = 0; i < numStars; i++) {
+        stars.push({
+          x: Math.random() * canvas.width,
+          y: Math.random() * canvas.height,
+          radius: Math.random() * 1.5,
+          opacity: Math.random() * 0.7 + 0.3,
+          twinkleSpeed: Math.random() * 0.02 + 0.001
+        });
+      }
+      
+      let twinklePhase = 0;
+      
+      function drawStars() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        twinklePhase += 0.01;
+        
+        stars.forEach(star => {
+          // Efecto de parpadeo (twinkling)
+          const twinkle = Math.sin(twinklePhase * star.twinkleSpeed) * 0.5 + 0.5;
+          ctx.fillStyle = `rgba(255, 255, 255, ${star.opacity * twinkle})`;
+          ctx.beginPath();
+          ctx.arc(star.x, star.y, star.radius, 0, Math.PI * 2);
+          ctx.fill();
+          
+          // Añadir glow a algunas estrellas
+          if (Math.random() > 0.98) {
+            ctx.fillStyle = `rgba(139, 92, 246, ${star.opacity * twinkle * 0.4})`;
+            ctx.beginPath();
+            ctx.arc(star.x, star.y, star.radius * 2.5, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        });
+        
+        requestAnimationFrame(drawStars);
+      }
+      
+      drawStars();
+      
+      // Redimensionar canvas al cambiar ventana
+      window.addEventListener('resize', () => {
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+      });
+    </script>
 
     <!-- CONTENIDO PRINCIPAL (z-index alto para estar encima del fondo) -->
     <div style="position: relative; z-index: 1;">
