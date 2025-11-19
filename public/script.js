@@ -47,17 +47,24 @@ async function cargarJuegosInicial() {
   estadoError.style.display = "none";
 
   try {
-    // REQUISITO: Obtener al menos 12 videojuegos de la API pública CheapShark
-    const url = `${apiBaseUrl}/deals?storeID=1&pageSize=50`;
-    const response = await fetch(url);
+    // Cargar juegos de las tres tiendas
+    const tiendasIDs = ["1", "7", "25"]; // Steam, Epic Games, Humble Bundle
+    const promesas = tiendasIDs.map((storeID) => {
+      const url = `${apiBaseUrl}/deals?storeID=${storeID}&pageSize=50`;
+      return fetch(url).then((response) => {
+        if (!response.ok) {
+          throw new Error(`Error al cargar juegos de la tienda ${storeID}`);
+        }
+        return response.json();
+      });
+    });
 
-    if (!response.ok) {
-      throw new Error("Error al conectar con CheapShark API");
-    }
+    // Esperar a que todas las promesas se resuelvan
+    const resultados = await Promise.all(promesas);
 
-    const data = await response.json();
-    juegosCache = data;
-    juegosActuales = [...data];
+    // Combinar los resultados de todas las tiendas
+    juegosCache = resultados.flat();
+    juegosActuales = [...juegosCache];
     paginaActual = 1;
 
     renderizarVideojuegos(obtenerJuegosPaginados());
