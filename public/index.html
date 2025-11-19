@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nexus Games - Tienda de Videojuegos</title>
+    <link href="./output.css" rel="stylesheet" />
+    <!-- Favicon personalizado -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90' font-family='Orbitron' font-weight='bold' fill='%230891b2'>✕</text></svg>" />
+  </head>
+
+  <body style="background-color: #000000; color: #ffffff; font-family: 'Roboto', sans-serif; margin: 0; padding: 0;">
+    
+    <!-- HEADER NEXUS GAMES -->
+    <header style="background-color: #000000; border-bottom: 2px solid #0891b2; box-shadow: 0 0 20px rgba(8, 145, 178, 0.3); padding: 1.5rem; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <h1 style="font-family: 'Orbitron', sans-serif; font-size: 2rem; font-weight: 900; margin: 0; letter-spacing: 2px; color: #ffffff;">NEXUS GAMES</h1>
+        <p style="font-size: 0.875rem; color: #cbd5e1; margin: 0.25rem 0 0 0;">Centro de Control de Videojuegos</p>
+      </div>
+      <span style="font-size: 0.75rem; color: #64748b;">v1.0 · Sistema Operativo</span>
+    </header>
+
+    <!-- CONTENIDO PRINCIPAL -->
+    <main style="padding: 1.5rem; max-width: 72rem; margin: 0 auto;">
+      
+      <!-- BARRA DE CARGA - INDICADOR VISUAL DE CARGA -->
+      <div id="progressBar" class="progress-bar" style="display: none; margin-bottom: 1.5rem;"></div>
+
+      <!-- SECCIÓN DE BÚSQUEDA Y FILTROS -->
+      <section style="margin-bottom: 2rem; display: flex; flex-direction: column; gap: 0.75rem;">
+        
+        <!-- Barra de búsqueda por nombre -->
+        <div style="display: flex; gap: 0.5rem; width: 100%; align-items: center;">
+          <input
+            id="inputBusqueda"
+            type="text"
+            placeholder="Buscar videojuego por nombre..."
+            style="flex: 1; background-color: #1e293b; color: #ffffff; border: 1px solid #0891b2; border-radius: 0.5rem; padding: 0.5rem 0.75rem; font-family: 'Roboto', sans-serif; transition: all 300ms; font-size: 0.875rem;"
+          />
+          <button id="btnBuscar" style="background-color: #0891b2; color: #000000; border: none; border-radius: 0.5rem; padding: 0.5rem 1rem; font-weight: 500; cursor: pointer; transition: all 300ms; font-size: 0.875rem;">
+            Buscar
+          </button>
+          <button id="btnLimpiar" style="background-color: #1e293b; color: #0891b2; border: 1px solid #0891b2; border-radius: 0.5rem; padding: 0.5rem 1rem; font-weight: 500; cursor: pointer; transition: all 300ms; font-size: 0.875rem;">
+            Limpiar
+          </button>
+        </div>
+
+        <!-- Filtros y Ordenamiento -->
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+          <!-- FILTRO POR TIENDA: Steam, Epic, Humble -->
+          <select id="filtroTienda" style="background-color: #1e293b; color: #0891b2; border: 1px solid #0891b2; border-radius: 0.5rem; padding: 0.5rem 0.75rem; font-family: 'Roboto', sans-serif; transition: all 300ms; font-size: 0.875rem; cursor: pointer;">
+            <option value="">Todas las tiendas</option>
+            <option value="1">Steam</option>
+            <option value="7">Epic Games</option>
+            <option value="25">Humble Bundle</option>
+          </select>
+
+          <!-- ORDENAMIENTO POR PRECIO -->
+          <select id="ordenamiento" style="background-color: #1e293b; color: #0891b2; border: 1px solid #0891b2; border-radius: 0.5rem; padding: 0.5rem 0.75rem; font-family: 'Roboto', sans-serif; transition: all 300ms; font-size: 0.875rem; cursor: pointer;">
+            <option value="">Ordenar por...</option>
+            <option value="precio-asc">Precio: Menor a Mayor</option>
+            <option value="precio-desc">Precio: Mayor a Menor</option>
+            <option value="descuento">Mayor Descuento</option>
+          </select>
+
+          <!-- PAGINACIÓN -->
+          <select id="paginacion" style="background-color: #1e293b; color: #0891b2; border: 1px solid #0891b2; border-radius: 0.5rem; padding: 0.5rem 0.75rem; font-family: 'Roboto', sans-serif; transition: all 300ms; font-size: 0.875rem; cursor: pointer;">
+            <option value="10">10 por página</option>
+            <option value="20">20 por página</option>
+            <option value="30">30 por página</option>
+          </select>
+        </div>
+      </section>
+
+      <!-- INDICADORES VISUALES DE ESTADO -->
+      <!-- Texto "Cargando..." -->
+      <p id="estadoCarga" style="font-size: 0.875rem; color: #0891b2; margin-bottom: 0.75rem; display: none;">
+        ⏳ Cargando videojuegos desde CheapShark API...
+      </p>
+
+      <!-- Texto "Error" -->
+      <p id="errorCarga" style="font-size: 0.875rem; color: #ef4444; margin-bottom: 0.75rem; display: none;">
+        ❌ Error al cargar los videojuegos. Intenta nuevamente.
+      </p>
+
+      <!-- GRID DE VIDEOJUEGOS -->
+      <section>
+        <h2 style="font-family: 'Orbitron', sans-serif; font-size: 1.125rem; font-weight: bold; margin-bottom: 1rem; color: #ffffff; text-transform: uppercase; letter-spacing: 1px;">Ofertas Destacadas</h2>
+
+        <div
+          id="gridVideojuegos" 
+          style="display: grid; gap: 1.5rem; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));">
+          <!-- RENDER DINÁMICO: Tarjetas generadas por JavaScript -->
+        </div>
+
+        <!-- BOTÓN "VER MÁS" para PAGINACIÓN DINÁMICA -->
+        <div style="display: flex; justify-content: center; margin-top: 2rem;">
+          <button id="btnVerMas" style="background-color: #0891b2; color: #000000; border: none; border-radius: 0.5rem; padding: 0.75rem 2rem; font-weight: 600; cursor: pointer; transition: all 300ms; font-size: 1rem; display: none;">
+            Cargar Más Juegos
+          </button>
+        </div>
+      </section>
+    </main>
+
+    <!-- MODAL DE DETALLE -->
+    <div id="modal" style="position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); display: none; justify-content: center; align-items: center; z-index: 1000; animation: fadeIn 0.3s ease-in-out;">
+      <div style="background-color: #0f172a; border: 2px solid #0891b2; border-radius: 0.75rem; padding: 2rem; max-width: 600px; width: 90%; animation: slideUp 0.3s ease-in-out; position: relative;">
+        
+        <!-- Botón Cerrar -->
+        <button id="btnCerrarModal" style="position: absolute; top: 1rem; right: 1rem; background: none; border: none; color: #0891b2; font-size: 1.5rem; cursor: pointer; transition: all 300ms;">
+          ✕
+        </button>
+
+        <!-- Contenido del Modal -->
+        <div id="modalContent">
+          <!-- CONTENIDO DINÁMICO: Nombre, imagen, precio normal, precio en oferta, enlace a tienda -->
+        </div>
+      </div>
+    </div>
+
+    <!-- Estilos para animaciones del Modal -->
+    <style>
+      @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+      }
+
+      @keyframes slideUp {
+        from {
+          transform: translateY(30px);
+          opacity: 0;
+        }
+        to {
+          transform: translateY(0);
+          opacity: 1;
+        }
+      }
+
+      #btnBuscar:hover {
+        background-color: #06b6d4;
+        box-shadow: 0 0 20px rgba(8, 145, 178, 0.6);
+      }
+
+      #btnLimpiar:hover {
+        background-color: #0891b2;
+        color: #000000;
+      }
+
+      #btnVerMas:hover {
+        background-color: #06b6d4;
+        box-shadow: 0 0 20px rgba(8, 145, 178, 0.6);
+        transform: scale(1.05);
+      }
+
+      #btnCerrarModal:hover {
+        color: #ffffff;
+      }
+
+      input:focus, select:focus {
+        outline: none;
+        border-color: #06b6d4;
+        box-shadow: 0 0 15px rgba(8, 145, 178, 0.5);
+      }
+    </style>
+
+    <script src="./script.js"></script>
+  </body>
+</html>
