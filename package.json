@@ -4,6 +4,9 @@
   "description": "Examen Practico",
   "main": "index.js",
   "scripts": {
+    "build:css": "tailwindcss -i ./src/input.css -o ./public/output.css",
+    "watch:css": "tailwindcss -i ./src/input.css -o ./public/output.css --watch",
+    "dev": "tailwindcss -i ./src/input.css -o ./public/output.css --watch",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
