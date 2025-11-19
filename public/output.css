@@ -226,6 +226,7 @@
     padding: 0.5rem 0.75rem;
     font-family: 'Roboto', sans-serif;
     transition: all 300ms;
+    font-size: 0.875rem;
   }
   input::placeholder {
     color: #64748b;
@@ -234,6 +235,9 @@
     outline: none;
     border-color: #06b6d4;
     box-shadow: 0 0 15px rgba(8, 145, 178, 0.5);
+  }
+  select {
+    cursor: pointer;
   }
 }
 @layer components {
@@ -270,6 +274,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 300ms;
+    font-size: 0.875rem;
   }
   .btn-primary:hover {
     background-color: #06b6d4;
@@ -284,10 +289,19 @@
     font-weight: 500;
     cursor: pointer;
     transition: all 300ms;
+    font-size: 0.875rem;
   }
   .btn-secondary:hover {
     background-color: #0891b2;
     color: #000000;
+  }
+  .btn-large {
+    padding: 0.75rem 2rem;
+    font-weight: 600;
+    font-size: 1rem;
+  }
+  .btn-large:hover {
+    transform: scale(1.05);
   }
   .modal {
     position: fixed;
