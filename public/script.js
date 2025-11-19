@@ -86,7 +86,7 @@ async function buscarPorNombre(titulo) {
 
   try {
     // REQUISITO: Búsqueda funcional con endpoint /games?title=texto&limit=20
-    const url = `${apiBaseUrl}/games?title=${encodeURIComponent(titulo)}&limit=20`;
+    const url = `${apiBaseUrl}/games?title=${encodeURIComponent(titulo)}&limit=60`;
     const response = await fetch(url);
 
     if (!response.ok) {
@@ -95,19 +95,38 @@ async function buscarPorNombre(titulo) {
 
     const data = await response.json();
     
+    if (data.length === 0) {
+      juegosActuales = [];
+      renderizarVideojuegos([]);
+      estadoCarga.style.display = "none";
+      return;
+    }
+    
     // Obtener detalles de cada juego encontrado
-    const juegosConDetalles = await Promise.all(
-      data.map(async (juego) => {
-        try {
-          const detallesUrl = `${apiBaseUrl}/deals?gameID=${juego.gameID}&limit=10`;
-          const detallesResponse = await fetch(detallesUrl);
-          const detalles = await detallesResponse.json();
-          return detalles[0] || juego;
-        } catch {
-          return juego;
+    const juegosConDetalles = [];
+    
+    for (let i = 0; i < Math.min(data.length, 20); i++) {
+      try {
+        const juego = data[i];
+        const detallesUrl = `${apiBaseUrl}/deals?gameID=${juego.gameID}&limit=1`;
+        const detallesResponse = await fetch(detallesUrl);
+        const detalles = await detallesResponse.json();
+        
+        if (detalles && detalles.length > 0) {
+          juegosConDetalles.push(detalles[0]);
+        } else {
+          // Si no hay detalles, añadir el juego básico
+          juegosConDetalles.push({
+            title: juego.gameTitle,
+            thumb: "",
+            salePrice: "N/A",
+            normalPrice: "N/A"
+          });
         }
-      })
-    );
+      } catch (err) {
+        console.error("Error obteniendo detalles:", err);
+      }
+    }
 
     juegosActuales = juegosConDetalles;
     paginaActual = 1;
@@ -352,7 +371,7 @@ function cargarMasJuegos() {
 }
 
 // ===== EVENT LISTENERS =====
-// Búsqueda funcional
+// Búsqueda funcional - Solo por botón y Enter
 btnBuscar.addEventListener("click", () => {
   buscarPorNombre(inputBusqueda.value);
 });
@@ -393,24 +412,6 @@ modal.addEventListener("click", (e) => {
   if (e.target === modal) {
     cerrarModal();
   }
-});
-
-// ===== OPTIMIZACIÓN: Debounce para búsqueda =====
-function debounce(func, delay) {
-  let timeoutId;
-  return function (...args) {
-    clearTimeout(timeoutId);
-    timeoutId = setTimeout(() => func(...args), delay);
-  };
-}
-
-// Búsqueda con debounce para no hacer requests excesivos
-const buscarConDebounce = debounce((titulo) => {
-  buscarPorNombre(titulo);
-}, 500);
-
-inputBusqueda.addEventListener("input", (e) => {
-  buscarConDebounce(e.target.value);
 });
 
 // ===== REQUISITO: Uso de async/await y try...catch - Correcta implementación de asincronía =====
