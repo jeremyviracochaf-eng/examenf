@@ -85,7 +85,6 @@ async function buscarPorNombre(titulo) {
   estadoError.style.display = "none";
 
   try {
-    // REQUISITO: Búsqueda funcional con endpoint /games?title=texto&limit=20
     const url = `${apiBaseUrl}/games?title=${encodeURIComponent(titulo)}&limit=60`;
     const response = await fetch(url);
 
@@ -94,39 +93,48 @@ async function buscarPorNombre(titulo) {
     }
 
     const data = await response.json();
-    
+
     if (data.length === 0) {
       juegosActuales = [];
       renderizarVideojuegos([]);
       estadoCarga.style.display = "none";
       return;
     }
-    
-    // Obtener detalles de cada juego encontrado
-    const juegosConDetalles = [];
-    
-    for (let i = 0; i < Math.min(data.length, 20); i++) {
-      try {
-        const juego = data[i];
-        const detallesUrl = `${apiBaseUrl}/deals?gameID=${juego.gameID}&limit=1`;
-        const detallesResponse = await fetch(detallesUrl);
-        const detalles = await detallesResponse.json();
-        
-        if (detalles && detalles.length > 0) {
-          juegosConDetalles.push(detalles[0]);
-        } else {
-          // Si no hay detalles, añadir el juego básico
-          juegosConDetalles.push({
-            title: juego.gameTitle,
-            thumb: "",
-            salePrice: "N/A",
-            normalPrice: "N/A"
-          });
+
+    // Obtener detalles adicionales para cada juego encontrado
+    const juegosConDetalles = await Promise.all(
+      data.map(async (juego) => {
+        try {
+          const detallesUrl = `${apiBaseUrl}/deals?title=${encodeURIComponent(juego.external)}&exact=1`;
+          const detallesResponse = await fetch(detallesUrl);
+          const detalles = await detallesResponse.json();
+
+          if (detalles && detalles.length > 0) {
+            const detalle = detalles[0];
+            return {
+              title: detalle.title || juego.external,
+              thumb: detalle.thumb || juego.thumb,
+              salePrice: detalle.salePrice || "0.00",
+              normalPrice: detalle.normalPrice || "N/A",
+              storeID: detalle.storeID || juego.storeID,
+              dealID: detalle.dealID || null,
+            };
+          }
+        } catch (err) {
+          console.error("Error obteniendo detalles adicionales:", err);
         }
-      } catch (err) {
-        console.error("Error obteniendo detalles:", err);
-      }
-    }
+
+        // Si no se pueden obtener detalles, devolver datos básicos
+        return {
+          title: juego.external || "Título Desconocido",
+          thumb: juego.thumb || "https://via.placeholder.com/250x350?text=Sin+Imagen",
+          salePrice: juego.cheapest || "0.00",
+          normalPrice: "N/A",
+          storeID: juego.storeID || "Desconocida",
+          dealID: juego.cheapestDealID || null,
+        };
+      })
+    );
 
     juegosActuales = juegosConDetalles;
     paginaActual = 1;
