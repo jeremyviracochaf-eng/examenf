@@ -7,7 +7,6 @@
       "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
       "Courier New", monospace;
-    --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
     --default-transition-duration: 150ms;
     --default-transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
     --default-font-family: var(--font-sans);
@@ -172,14 +171,8 @@
   .grid {
     display: grid;
   }
-  .table {
-    display: table;
-  }
   .flex-grow {
     flex-grow: 1;
-  }
-  .border-collapse {
-    border-collapse: collapse;
   }
   .transform {
     transform: var(--tw-rotate-x,) var(--tw-rotate-y,) var(--tw-rotate-z,) var(--tw-skew-x,) var(--tw-skew-y,);
@@ -194,9 +187,6 @@
     border-style: var(--tw-border-style);
     border-width: 1px;
   }
-  .underline {
-    text-decoration-line: underline;
-  }
   .outline {
     outline-style: var(--tw-outline-style);
     outline-width: 1px;
@@ -204,18 +194,10 @@
   .filter {
     filter: var(--tw-blur,) var(--tw-brightness,) var(--tw-contrast,) var(--tw-grayscale,) var(--tw-hue-rotate,) var(--tw-invert,) var(--tw-saturate,) var(--tw-sepia,) var(--tw-drop-shadow,);
   }
-  .backdrop-filter {
-    -webkit-backdrop-filter: var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
-    backdrop-filter: var(--tw-backdrop-blur,) var(--tw-backdrop-brightness,) var(--tw-backdrop-contrast,) var(--tw-backdrop-grayscale,) var(--tw-backdrop-hue-rotate,) var(--tw-backdrop-invert,) var(--tw-backdrop-opacity,) var(--tw-backdrop-saturate,) var(--tw-backdrop-sepia,);
-  }
   .transition {
     transition-property: color, background-color, border-color, outline-color, text-decoration-color, fill, stroke, --tw-gradient-from, --tw-gradient-via, --tw-gradient-to, opacity, box-shadow, transform, translate, scale, rotate, filter, -webkit-backdrop-filter, backdrop-filter, display, content-visibility, overlay, pointer-events;
     transition-timing-function: var(--tw-ease, var(--default-transition-timing-function));
     transition-duration: var(--tw-duration, var(--default-transition-duration));
-  }
-  .ease-in-out {
-    --tw-ease: var(--ease-in-out);
-    transition-timing-function: var(--ease-in-out);
   }
 }
 @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Roboto:wght@300;400;500;700&display=swap');
@@ -228,10 +210,137 @@
 @layer base {
   body {
     font-family: 'Roboto', sans-serif;
+    background-color: #000000;
+    color: #ffffff;
+    line-height: 1.6;
   }
   h1, h2, h3, h4, h5, h6 {
     font-family: 'Orbitron', sans-serif;
     font-weight: bold;
+  }
+  input, select {
+    background-color: #1e293b;
+    color: #ffffff;
+    border: 1px solid #0891b2;
+    border-radius: 0.5rem;
+    padding: 0.5rem 0.75rem;
+    font-family: 'Roboto', sans-serif;
+    transition: all 300ms;
+  }
+  input::placeholder {
+    color: #64748b;
+  }
+  input:focus, select:focus {
+    outline: none;
+    border-color: #06b6d4;
+    box-shadow: 0 0 15px rgba(8, 145, 178, 0.5);
+  }
+}
+@layer components {
+  .nexus-header {
+    background-color: #000000;
+    border-bottom: 3px solid;
+    border-image: linear-gradient(90deg, #0891b2, #8b5cf6, #3b82f6) 1;
+    box-shadow: 0 0 30px rgba(8, 145, 178, 0.4), 0 0 60px rgba(139, 92, 246, 0.2);
+    padding: 1.5rem;
+    position: relative;
+    z-index: 10;
+  }
+  .game-card {
+    background-color: #0f172a;
+    border: 1px solid #0891b2;
+    border-radius: 0.75rem;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: all 300ms;
+    cursor: pointer;
+  }
+  .game-card:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 30px rgba(8, 145, 178, 0.5);
+    border-color: #06b6d4;
+  }
+  .btn-primary {
+    background-color: #0891b2;
+    color: #000000;
+    border: none;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 300ms;
+  }
+  .btn-primary:hover {
+    background-color: #06b6d4;
+    box-shadow: 0 0 20px rgba(8, 145, 178, 0.6);
+  }
+  .btn-secondary {
+    background-color: #1e293b;
+    color: #0891b2;
+    border: 1px solid #0891b2;
+    border-radius: 0.5rem;
+    padding: 0.5rem 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 300ms;
+  }
+  .btn-secondary:hover {
+    background-color: #0891b2;
+    color: #000000;
+  }
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.9);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    backdrop-filter: blur(4px);
+  }
+  .modal.active {
+    display: flex;
+  }
+  .modal-content {
+    background-color: #0f172a;
+    border: 2px solid #0891b2;
+    border-radius: 0.75rem;
+    padding: 2rem;
+    max-width: 600px;
+    width: 90%;
+    position: relative;
+    box-shadow: 0 0 40px rgba(8, 145, 178, 0.5);
+  }
+  .progress-bar {
+    height: 0.25rem;
+    background: linear-gradient(90deg, #0891b2 0%, #3b82f6 100%);
+    width: 100%;
+    margin-bottom: 1.5rem;
+    animation: progress-animation 2s ease-in-out infinite;
+    border-radius: 0.25rem;
+    box-shadow: 0 0 10px rgba(8, 145, 178, 0.5);
+  }
+  .estado-carga {
+    font-size: 0.875rem;
+    color: #0891b2;
+    background-color: rgba(8, 145, 178, 0.1);
+    border-left: 3px solid #0891b2;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+  .estado-error {
+    font-size: 0.875rem;
+    color: #ef4444;
+    background-color: rgba(239, 68, 68, 0.1);
+    border-left: 3px solid #ef4444;
+    padding: 0.75rem;
+    border-radius: 0.5rem;
+    margin-bottom: 0.75rem;
   }
 }
 @layer utilities {
@@ -239,29 +348,47 @@
     color: #0891b2;
     text-shadow: 0 0 10px rgba(8, 145, 178, 0.8);
   }
-  .progress-bar {
-    height: 0.25rem;
-    background: linear-gradient(90deg, #0891b2 0%, #3b82f6 100%);
-    width: 100%;
-    animation: progress-animation 2s ease-in-out infinite;
-  }
   @keyframes progress-animation {
-    0% {
+    0%, 100% {
       width: 0%;
+      opacity: 0.5;
     }
     50% {
       width: 100%;
+      opacity: 1;
+    }
+  }
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes slideUp {
+    from {
+      transform: translateY(50px);
+      opacity: 0;
+    }
+    to {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  @keyframes scan {
+    0% {
+      top: 0%;
     }
     100% {
-      width: 0%;
+      top: 100%;
     }
   }
-  .card-hover {
-    transition: all 300ms;
+  .animate-fade-in {
+    animation: fadeIn 0.3s ease-in-out;
   }
-  .card-hover:hover {
-    transform: scale(1.05);
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  .animate-slide-up {
+    animation: slideUp 0.3s ease-in-out;
   }
 }
 @property --tw-rotate-x {
@@ -347,46 +474,6 @@
   syntax: "*";
   inherits: false;
 }
-@property --tw-backdrop-blur {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-backdrop-brightness {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-backdrop-contrast {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-backdrop-grayscale {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-backdrop-hue-rotate {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-backdrop-invert {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-backdrop-opacity {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-backdrop-saturate {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-backdrop-sepia {
-  syntax: "*";
-  inherits: false;
-}
-@property --tw-ease {
-  syntax: "*";
-  inherits: false;
-}
 @layer properties {
   @supports ((-webkit-hyphens: none) and (not (margin-trim: inline))) or ((-moz-orient: inline) and (not (color:rgb(from red r g b)))) {
     *, ::before, ::after, ::backdrop {
@@ -410,16 +497,6 @@
       --tw-drop-shadow-color: initial;
       --tw-drop-shadow-alpha: 100%;
       --tw-drop-shadow-size: initial;
-      --tw-backdrop-blur: initial;
-      --tw-backdrop-brightness: initial;
-      --tw-backdrop-contrast: initial;
-      --tw-backdrop-grayscale: initial;
-      --tw-backdrop-hue-rotate: initial;
-      --tw-backdrop-invert: initial;
-      --tw-backdrop-opacity: initial;
-      --tw-backdrop-saturate: initial;
-      --tw-backdrop-sepia: initial;
-      --tw-ease: initial;
     }
   }
 }
