@@ -395,6 +395,24 @@ modal.addEventListener("click", (e) => {
   }
 });
 
+// ===== OPTIMIZACIÓN: Debounce para búsqueda =====
+function debounce(func, delay) {
+  let timeoutId;
+  return function (...args) {
+    clearTimeout(timeoutId);
+    timeoutId = setTimeout(() => func(...args), delay);
+  };
+}
+
+// Búsqueda con debounce para no hacer requests excesivos
+const buscarConDebounce = debounce((titulo) => {
+  buscarPorNombre(titulo);
+}, 500);
+
+inputBusqueda.addEventListener("input", (e) => {
+  buscarConDebounce(e.target.value);
+});
+
 // ===== REQUISITO: Uso de async/await y try...catch - Correcta implementación de asincronía =====
 // Cargar videojuegos al iniciar
 cargarJuegosInicial();
